@@ -1,0 +1,15 @@
+spring:
+  profiles:
+    active: dev
+    include: secret
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: joeun065@gmail.com
+    password: NEED_TO_INPUT_ON_SECRET
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
