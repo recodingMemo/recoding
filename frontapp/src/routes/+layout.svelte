@@ -14,6 +14,6 @@
 		<NavLi href="/">로그인</NavLi>
 	</NavUl>
 </Navbar>
-<div class="flex mx-auto w-10/12">
+<div class="mx-auto w-10/12">
 	<slot></slot>
 </div>
