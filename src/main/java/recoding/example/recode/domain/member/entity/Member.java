@@ -35,6 +35,10 @@ public class Member extends BaseEntity {
     @Setter
     private int tokenLifeSpan = 4;
 
+    //자기소개
+    private String selfIntroduction;
+
+
 
     public Map<String, Object> toClaims() {
         return Map.of(

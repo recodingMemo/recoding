@@ -17,3 +17,10 @@
     margin-top: 12px;
     margin-bottom: 24px;
 }
+
+.userProfileImg{
+    min-width: 200px;
+    min-height: 200px;
+    border-radius: 9999px;
+    background: black;
+}

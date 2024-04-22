@@ -16,4 +16,8 @@ public class MemberService {
     public Optional<Member> findbyId(Long id) {
         return this.memberRepository.findById(id);
     }
+
+    public void save(Member modifyMember) {
+        this.memberRepository.save(modifyMember);
+    }
 }

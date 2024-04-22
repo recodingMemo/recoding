@@ -1,58 +1,188 @@
 <script>
+	import { Button, Modal, Textarea } from 'flowbite-svelte';
+	let selfIntroductionModal = false;
+    let categoriesModal = false;
 	let username = '';
 	if (typeof window !== 'undefined') {
 		const url = window.location.href;
 		const pathSegments = new URL(url).pathname.split('/');
-
 		username = pathSegments[1];
-		console.log(`Username: ${username}`);
+	}
+
+	let textareapropsSelfIntroduction = {
+		id: 'message',
+		name: 'message',
+		label: 'Your message',
+		rows: 5,
+		placeholder: '자기소개를 입력해주세요'
+	};
+
+    let textareapropsCategories = {
+		id: 'message',
+		name: 'message',
+		label: 'Your message',
+		rows: 5,
+		placeholder: '카테고리 제목을 입력해주세요'
+	};
+
+	let selfIntroduction = {
+		selfIntroduction: ''
+	};
+    let category = {
+		category: ''
+	};
+
+	let name = '';
+	let categories = [];
+
+	const getUserInfo = async () => {
+		try {
+			const response = await fetch(`http://localhost:8080/api/v1/${username}`, {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				credentials: 'include'
+			});
+
+			if (response.ok) {
+				const data = await response.json();
+
+				if (data.resultCode === 'S-1') {
+					name = data.data.name;
+					categories = data.data.categories;
+					selfIntroduction.selfIntroduction = data.data.selfIntroduction;
+				} else {
+					alert('본인 계정의 설정만 가능합니다.');
+				}
+			} else {
+				console.error('서버 응답 오류:', response.statusText);
+				if (!response.ok && response.status != 401) {
+					alert('다시 시도 해주세요.');
+				}
+			}
+		} catch (error) {
+			console.error('오류 발생:', error);
+			alert('다시 시도 해주세요.');
+		}
+	};
+
+    const setUserInfo = async () => {
+		try {
+			const response = await fetch(`http://localhost:8080/api/v1/${username}/info`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				credentials: 'include',
+                body: JSON.stringify(selfIntroduction),
+			});
+
+			if (response.ok) {
+				const data = await response.json();
+
+				if (data.resultCode === 'S-1') {
+					category.category = '';
+                    alert('수정이 완료되었습니다')
+                    getUserInfo();
+				} else {
+					alert('본인의 계정 설정만 가능합니다.');
+				}
+			} else {
+				console.error('서버 응답 오류:', response.statusText);
+				if (!response.ok && response.status != 401) {
+					alert('다시 시도 해주세요.');
+				}
+			}
+		} catch (error) {
+			console.error('오류 발생:', error);
+			alert('다시 시도 해주세요.');
+		}
+	};
+
+    const setCategory = async () => {
+		try {
+			const response = await fetch(`http://localhost:8080/api/v1/category`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				credentials: 'include',
+                body: JSON.stringify(category),
+			});
+
+			if (response.ok) {
+				const data = await response.json();
+
+				if (data.resultCode === 'S-1') {
+					category.category = '';
+                    alert('추가가 완료되었습니다')
+                    getUserInfo();
+				} else {
+					alert('본인의 계정 설정만 가능합니다.');
+				}
+			} else {
+				console.error('서버 응답 오류:', response.statusText);
+				if (!response.ok && response.status != 401) {
+					alert('다시 시도 해주세요.');
+				}
+			}
+		} catch (error) {
+			console.error('오류 발생:', error);
+			alert('다시 시도 해주세요.');
+		}
+	};
+
+	function finish() {
+		location.href=`/${username}`
 	}
 </script>
 
 <div class="mx-auto w-8/12 py-16">
-	<!-- <div class="flex">
-		<div class="">
-			<div style="background-color: blue; width:130px; height:130px; border-radius: 9999px;"></div>
-			<button class="mx-auto mt-3 block rounded-sm bg-[#8AAAE5] text-white">　이미지 업로드　</button>
-			<button class="mx-auto mt-3 block text-[#8AAAE5]">이미지 제거</button>
-		</div>
-
-		<div class="ml-16">
-			<p>{username}</p>
-			<p> 　</p>
-			<p>대충 설명란</p>
-
-			<button class="text-[#8AAAE5] underline">수정</button>
-		</div>
-	</div>
-	<div class="userProfile_block"></div>
-	<div class="relative"></div> -->
-
 	<div class="flex justify-center">
-		<div style="background-color: blue; width:200px; height:200px; border-radius: 9999px;">
-			<p class="text-white">대충 프사</p>
-		</div>
+		<div class="userProfileImg"></div>
 
 		<div class="ml-8">
-			<p>{username}의 페이지</p>
-			<p></p>
-			<p>대충 설명란</p>
-			<button class="text-[#8AAAE5] underline">수정</button>
+			<p>{name}의 페이지</p>
+			<br />
+			<p>{selfIntroduction.selfIntroduction}</p>
+			<Button class="p-0 text-[#8AAAE5] underline" on:click={() => (selfIntroductionModal = true)}
+				>수정</Button
+			>
+			<Modal title="자기소개 수정" bind:open={selfIntroductionModal} autoclose>
+				<Textarea {...textareapropsSelfIntroduction} bind:value={selfIntroduction.selfIntroduction} />
+				<svelte:fragment slot="footer">
+					<Button class="bg-[#8AAAE5]" on:click={() => setUserInfo()}
+						>수정 완료</Button
+					>
+				</svelte:fragment>
+			</Modal>
 		</div>
 	</div>
-	<!-- <div class="userProfile_block"></div> -->
 	<p class="mt-12 text-center">카테고리 리스트</p>
 	<p class="userCategory_block mx-auto"></p>
 	<div class="flex">
 		<div class="mx-auto">
-			<p>대충 카테고리1 <button class="ml-3 text-gray-300">x</button></p>
-			<p>대충 카테고리2 <button class="ml-3 text-gray-300">x</button></p>
-			<p>대충 카테고리3 <button class="ml-3 text-gray-300">x</button></p>
-			<p>대충 카테고리4 <button class="ml-3 text-gray-300">x</button></p>
-			<button class="text-[#8AAAE5] underline">추가</button>
+			{#each categories as category}
+				<p>{category.name} <button class="ml-3 text-gray-300">x</button></p>
+			{/each}
+            <Button class="p-0 text-[#8AAAE5] underline" on:click={() => (categoriesModal = true)}
+				>추가</Button
+			>
+			<Modal title="카테고리 추가" bind:open={categoriesModal} autoclose>
+				<Textarea {...textareapropsCategories} bind:value={category.category} />
+				<svelte:fragment slot="footer">
+					<Button class="bg-[#8AAAE5]" on:click={() => setCategory()}
+						>추가하기</Button
+					>
+				</svelte:fragment>
+			</Modal>
+			<!-- <button class="text-[#8AAAE5] underline">추가</button> -->
 		</div>
 	</div>
 	<div class="text-right">
-		<button class="mr-14 mt-4 p-2 bg-[#8AAAE5] text-white rounded">수정완료 </button>
+		<button class="mr-14 mt-4 rounded bg-[#8AAAE5] p-2 text-white" on:click={finish}
+			>수정완료
+		</button>
 	</div>
 </div>
