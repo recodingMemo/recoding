@@ -1,7 +1,7 @@
 <script>
 	import { Button, Modal, Textarea } from 'flowbite-svelte';
 	let selfIntroductionModal = false;
-    let categoriesModal = false;
+	let categoriesModal = false;
 	let username = '';
 	if (typeof window !== 'undefined') {
 		const url = window.location.href;
@@ -17,7 +17,7 @@
 		placeholder: '자기소개를 입력해주세요'
 	};
 
-    let textareapropsCategories = {
+	let textareapropsCategories = {
 		id: 'message',
 		name: 'message',
 		label: 'Your message',
@@ -28,7 +28,7 @@
 	let selfIntroduction = {
 		selfIntroduction: ''
 	};
-    let category = {
+	let category = {
 		category: ''
 	};
 
@@ -67,15 +67,15 @@
 		}
 	};
 
-    const setUserInfo = async () => {
+	const setUserInfo = async () => {
 		try {
-			const response = await fetch(`http://localhost:8080/api/v1/${username}/info`, {
-				method: 'POST',
+			const response = await fetch(`http://localhost:8080/api/v1/${username}`, {
+				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				credentials: 'include',
-                body: JSON.stringify(selfIntroduction),
+				body: JSON.stringify(selfIntroduction)
 			});
 
 			if (response.ok) {
@@ -83,8 +83,8 @@
 
 				if (data.resultCode === 'S-1') {
 					category.category = '';
-                    alert('수정이 완료되었습니다')
-                    getUserInfo();
+					alert('수정이 완료되었습니다');
+					getUserInfo();
 				} else {
 					alert('본인의 계정 설정만 가능합니다.');
 				}
@@ -100,7 +100,7 @@
 		}
 	};
 
-    const setCategory = async () => {
+	const setCategory = async () => {
 		try {
 			const response = await fetch(`http://localhost:8080/api/v1/category`, {
 				method: 'POST',
@@ -108,7 +108,7 @@
 					'Content-Type': 'application/json'
 				},
 				credentials: 'include',
-                body: JSON.stringify(category),
+				body: JSON.stringify(category)
 			});
 
 			if (response.ok) {
@@ -116,8 +116,8 @@
 
 				if (data.resultCode === 'S-1') {
 					category.category = '';
-                    alert('추가가 완료되었습니다')
-                    getUserInfo();
+					alert('추가가 완료되었습니다');
+					getUserInfo();
 				} else {
 					alert('본인의 계정 설정만 가능합니다.');
 				}
@@ -134,7 +134,7 @@
 	};
 
 	function finish() {
-		location.href=`/${username}`
+		location.href = `/${username}`;
 	}
 </script>
 
@@ -150,11 +150,12 @@
 				>수정</Button
 			>
 			<Modal title="자기소개 수정" bind:open={selfIntroductionModal} autoclose>
-				<Textarea {...textareapropsSelfIntroduction} bind:value={selfIntroduction.selfIntroduction} />
+				<Textarea
+					{...textareapropsSelfIntroduction}
+					bind:value={selfIntroduction.selfIntroduction}
+				/>
 				<svelte:fragment slot="footer">
-					<Button class="bg-[#8AAAE5]" on:click={() => setUserInfo()}
-						>수정 완료</Button
-					>
+					<Button class="bg-[#8AAAE5]" on:click={() => setUserInfo()}>수정 완료</Button>
 				</svelte:fragment>
 			</Modal>
 		</div>
@@ -166,15 +167,13 @@
 			{#each categories as category}
 				<p>{category.name} <button class="ml-3 text-gray-300">x</button></p>
 			{/each}
-            <Button class="p-0 text-[#8AAAE5] underline" on:click={() => (categoriesModal = true)}
+			<Button class="p-0 text-[#8AAAE5] underline" on:click={() => (categoriesModal = true)}
 				>추가</Button
 			>
 			<Modal title="카테고리 추가" bind:open={categoriesModal} autoclose>
 				<Textarea {...textareapropsCategories} bind:value={category.category} />
 				<svelte:fragment slot="footer">
-					<Button class="bg-[#8AAAE5]" on:click={() => setCategory()}
-						>추가하기</Button
-					>
+					<Button class="bg-[#8AAAE5]" on:click={() => setCategory()}>추가하기</Button>
 				</svelte:fragment>
 			</Modal>
 			<!-- <button class="text-[#8AAAE5] underline">추가</button> -->

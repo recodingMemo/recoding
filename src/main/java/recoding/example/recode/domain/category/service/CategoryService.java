@@ -20,4 +20,8 @@ public class CategoryService {
     public void save(Category category) {
         this.categoryRepository.save(category);
     }
+
+    public Category findByName(String categoryName) {
+        return this.categoryRepository.findByName(categoryName).orElse(null);
+    }
 }

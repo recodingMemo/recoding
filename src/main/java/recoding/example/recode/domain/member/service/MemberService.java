@@ -20,4 +20,8 @@ public class MemberService {
     public void save(Member modifyMember) {
         this.memberRepository.save(modifyMember);
     }
+
+    public Member findbyUsername(String username) {
+        return this.memberRepository.findByUsername(username).orElse(null);
+    }
 }
