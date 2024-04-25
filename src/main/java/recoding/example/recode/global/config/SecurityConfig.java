@@ -30,6 +30,10 @@ public class SecurityConfig {
                         // 나머지는 인증된 사용자만 가능
 
                 )
+                .oauth2Login(
+                        oauth2Login -> oauth2Login
+                                .loginPage("/api/v1/member/login")
+                )
                 .cors(cors -> cors.configure(http)) // 타 도메인에서 API 호출 가능
                 .csrf(csrf -> csrf.disable()) // CSRF 토큰 끄기
                 .httpBasic(httpBasic -> httpBasic.disable()) // httpBaic 로그인 방식 끄기
@@ -46,7 +50,7 @@ public class SecurityConfig {
                                 .logoutUrl("/api/v1/member/logout")
                                 .logoutSuccessUrl("/")
                                 .invalidateHttpSession(true)
-                                .deleteCookies("access_token","refresh_token"))
+                                .deleteCookies("access_token", "refresh_token"))
         ;
 
         return http.build();
