@@ -43,6 +43,20 @@
 			alert('다시 시도 해주세요.');
 		}
 	};
+
+	
+	let markdownViewerEl;
+	let markdownViewer;
+
+	async function viewer() {
+		const Viewer = (await import('@toast-ui/editor/dist/toastui-editor-viewer')).default;
+		markdownViewer = new Viewer({
+			el: markdownViewerEl,
+			initialValue: checked
+		});
+	}
+
+
 </script>
 
 <div class="w-10/12 mx-auto">
@@ -56,3 +70,4 @@
 		내용
 	</div>
 </div>
+<div bind:this={markdownViewerEl} />

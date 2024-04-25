@@ -61,7 +61,7 @@ public class MemberController {
     }
 
     @PutMapping(value = "")
-    public RsData<?> addMemberInfo(@PathVariable("member") String member, HttpServletRequest request, SelfIntroductionRequest selfIntroductionRequest) {
+    public RsData<?> modifyMemberInfo(@PathVariable("member") String member, HttpServletRequest request, SelfIntroductionRequest selfIntroductionRequest) {
         String token = extractAccessToken(request);
         Long userId = ((Integer) jwtProvider.getClaims(token).get("id")).longValue();
         Member loginMember = this.memberService.findbyId(userId).orElse(null);
