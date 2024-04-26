@@ -1,6 +1,5 @@
 <script>
     import {onMount} from 'svelte';
-    import {comment} from "postcss";
 
     onMount(async () => {
         // URL에서 인증 코드(code) 추출.
@@ -48,7 +47,7 @@
                     id: `${userInfo.id}`,
                     nickname: `${userInfo.properties.nickname}`
                 };
-                console.log(formData);
+
 
                 // formData를 백엔드 서버로 보내, 로그인 요청 시도
                 const res = await fetch(`http://localhost:8080/api/v1/member/kakaologin`, {
@@ -58,20 +57,14 @@
                     },
                     body: JSON.stringify(formData)
                 });
-
+                console.log(res);
                 // 백엔드 서버에서 받은 res 변수에 담긴 ok값이 true 라면
                 if (res.ok) {
                     const data = await res.json();
 
-                    // 액세스 토큰과 리프레시 토큰을 각각 변수에 저장시키고
-                    const accesstoken = await data.data.accessToken;
-                    const refreshToken = await data.data.refreshToken;
-
-                    // 두 토큰을 로컬 스토리지에 저장 후 홈 페이지로 이동
-                    await localStorage.setItem('accessToken', accesstoken);
-                    await localStorage.setItem('refreshToken', refreshToken);
-                    window.location.href = '/';
-                }else {
+                    const nickname = userInfo.properties.nickname;
+                    window.location.href = `/${nickname}`;
+                } else {
                     console.log(res.statusText);
                 }
             }

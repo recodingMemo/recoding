@@ -1,10 +1,14 @@
 <script>
+	const nickname = decodeURIComponent('${nickname}');
+
 	let username = '';
 	if (typeof window !== 'undefined') {
 		const url = window.location.href;
 		const pathSegments = new URL(url).pathname.split('/');
 		// 경로에서 username과 id 추출
-		username = pathSegments[1]; // 'cars'
+		username = pathSegments[1];
+		console.log(nickname);
+		document.getElementById('usernameContainer').innerHTML = `<p>{username}의 페이지</p>`;
 		console.log(`Username: ${username}`);
 	}
 </script>

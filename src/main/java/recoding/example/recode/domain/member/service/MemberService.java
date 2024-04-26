@@ -17,53 +17,49 @@ public class MemberService {
     private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
 
+    public Optional<Member> findByUsername(String username) {
+        return memberRepository.findByUsername(username);
+    }
 
     public Optional<Member> findbyId(Long id) {
         return this.memberRepository.findById(id);
     }
 
-    public String genAccessToken(String username, String password) {
-        Member member = findByUsername(username).orElse(null);
-
+    public String genAccessToken(String kakaoUserId) {
+        Member member = findByKakaoId(kakaoUserId).orElse(null);
         if (member == null) return null;
-
-        if (!passwordEncoder.matches(password, member.getPassword())) {
+        if (!passwordEncoder.matches(kakaoUserId, member.getPassword())) {
             return null;
         }
-
         return jwtProvider.genToken(member.toClaims(), 60 * 5);
     }
 
-    public String genRefreshToken(String username, String password) {
-        Member member = findByUsername(username).orElse(null);
-
+    public String genRefreshToken(String kakaoUserId) {
+        Member member = findByKakaoId(kakaoUserId).orElse(null);
         if (member == null) return null;
-
-        if (!passwordEncoder.matches(password, member.getPassword())) {
+        if (!passwordEncoder.matches(kakaoUserId, member.getPassword())) {
             return null;
         }
-
         return jwtProvider.genToken(member.toClaims(), 60 * 60 * 24 * 365);
     }
 
     public String genNewAccessToken(String username) {
-        Member member = findByUsername(username).orElse(null);
-
+        Member member = findByKakaoId(username).orElse(null);
         if (member == null) return null;
-
         return jwtProvider.genToken(member.toClaims(), 60 * 5);
     }
 
 
-    public Optional<Member> findByUsername(String username) {
-        return memberRepository.findByUsername(username);
+    public Optional<Member> findByKakaoId(String kakaoUserId) {
+        return memberRepository.findByUsername(kakaoUserId);
     }
 
     public Member join(String name, String password, String username) {
         Member member = Member.builder()
-                .username(username)
                 .name(name)
                 .password(passwordEncoder.encode(password))
+                .tokenLifeSpan(10)
+                .username(username)
                 .build();
 
         memberRepository.save(member);
