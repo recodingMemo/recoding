@@ -29,4 +29,8 @@ public class PostService {
     public List<Post> findByShared(boolean b) {
         return this.postRepository.findByShared(b);
     }
+
+    public void save(Post post) {
+        this.postRepository.save(post);
+    }
 }

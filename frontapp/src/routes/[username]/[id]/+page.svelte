@@ -1,8 +1,12 @@
 <script>
 	import { onMount } from 'svelte';
 
+	import '@toast-ui/editor/dist/toastui-editor.css';
+	import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
+
 	let username = '';
 	let id = '';
+	let content = '';
 	if (typeof window !== 'undefined') {
 		const url = window.location.href;
 		const pathSegments = new URL(url).pathname.split('/');
@@ -14,6 +18,13 @@
 		console.log(`Username: ${username}`);
 		console.log(`ID: ${id}`);
 	}
+	let title;
+	let name;
+	let markdownEditorEl;
+	let markdownEditor;
+	onMount(async () => {
+		getPost();
+	});
 
 	const getPost = async () => {
 		try {
@@ -29,6 +40,20 @@
 				const data = await response.json();
 
 				if (data.resultCode === 'S-2') {
+					content = data.data.post.content;
+					title = data.data.post.title;
+					name = data.data.post.member.name;
+					const Editor = (await import('@toast-ui/editor')).default;
+
+					markdownEditor = new Editor.factory({
+						el: markdownEditorEl,
+						height: '80vh',
+						initialEditType: 'markdown',
+						viewer: true,
+						initialValue: content,
+						theme: 'white'
+					});
+
 				} else {
 					alert('등록된 글이 없습니다.');
 				}
@@ -44,30 +69,20 @@
 		}
 	};
 
-	
-	let markdownViewerEl;
-	let markdownViewer;
-
-	async function viewer() {
-		const Viewer = (await import('@toast-ui/editor/dist/toastui-editor-viewer')).default;
-		markdownViewer = new Viewer({
-			el: markdownViewerEl,
-			initialValue: checked
-		});
+	function href(){
+		location.href=`/${username}`
 	}
-
 
 </script>
 
-<div class="w-10/12 mx-auto">
-	<h1 class="mt-10 text-4xl">제목</h1>
-	<div class="flex justify-end mt-8">
-		<button class="mr-auto">글쓴이</button>
+<div class="mx-auto w-10/12">
+	<h1 class="mt-10 text-4xl">{title}</h1>
+	<div class="mt-8 flex justify-end">
+		<button on:click={href} class="mr-auto">{name}</button>
 		<button class="text-[#868e96]">수정</button>
 		<button class="ml-2 text-[#868e96]">삭제</button>
 	</div>
 	<div class="mt-12">
-		내용
+		<div bind:this={markdownEditorEl} />
 	</div>
 </div>
-<div bind:this={markdownViewerEl} />

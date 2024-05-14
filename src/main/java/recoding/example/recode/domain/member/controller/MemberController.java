@@ -2,11 +2,13 @@ package recoding.example.recode.domain.member.controller;
 
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.web.bind.annotation.*;
 import recoding.example.recode.domain.category.entity.Category;
 import recoding.example.recode.domain.category.service.CategoryService;
@@ -15,7 +17,9 @@ import recoding.example.recode.domain.member.service.MemberService;
 import recoding.example.recode.global.jwt.JwtProvider;
 import recoding.example.recode.global.rs.RsData;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static recoding.example.recode.global.filter.JwtAuthorizationFilter.extractAccessToken;
@@ -37,15 +41,13 @@ public class MemberController {
     }
 
     @GetMapping(value = "")
-    public RsData<?> getMemberInfo(@PathVariable("member") String member, HttpServletRequest request) {
+    public RsData<?> getMemberInfo(@PathVariable("member") String member) {
 
-        String token = extractAccessToken(request); //헤더에 담긴 쿠키에서 토큰 요청
-        Long userId = ((Integer) jwtProvider.getClaims(token).get("id")).longValue(); //유저의 아이디 값
-        Member loginMember = this.memberService.findbyId(userId).orElse(null);
-        if (loginMember != null && loginMember.getUsername().equals(member)) {
-            String name = loginMember.getName();
-            String selfIntroduction = loginMember.getSelfIntroduction();
-            List<Category> categories = this.categoryService.findByMember(loginMember);
+      Member searchMember = this.memberService.findByUsername(member).orElse(null);
+        if (searchMember != null) {
+            String name = searchMember.getName();
+            String selfIntroduction = searchMember.getSelfIntroduction();
+            List<Category> categories = this.categoryService.findByMember(searchMember);
 
             return RsData.of("S-1", "유저 정보 조회 성공", new MemberInfoReponse(name, selfIntroduction, categories));
         } else {
@@ -55,13 +57,12 @@ public class MemberController {
 
     @Data
     public static class SelfIntroductionRequest {
-        @NotNull
-        private String name;
+        private String modifyIntroduction;
 
     }
 
     @PutMapping(value = "")
-    public RsData<?> modifyMemberInfo(@PathVariable("member") String member, HttpServletRequest request, SelfIntroductionRequest selfIntroductionRequest) {
+    public RsData<?> modifyMemberInfo(@PathVariable("member") String member, HttpServletRequest request,@RequestBody SelfIntroductionRequest selfIntroductionRequest) {
         String token = extractAccessToken(request);
         Long userId = ((Integer) jwtProvider.getClaims(token).get("id")).longValue();
         Member loginMember = this.memberService.findbyId(userId).orElse(null);
@@ -69,7 +70,7 @@ public class MemberController {
             Member modifyMember = Member.builder()
                     .id(loginMember.getId())
                     .name(loginMember.getName())
-                    .selfIntroduction(selfIntroductionRequest.getName())
+                    .selfIntroduction(selfIntroductionRequest.getModifyIntroduction())
                     .username(loginMember.getUsername())
                     .password(loginMember.getPassword())
                     .tokenLifeSpan(loginMember.getTokenLifeSpan())

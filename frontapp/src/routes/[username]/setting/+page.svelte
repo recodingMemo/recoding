@@ -1,13 +1,19 @@
 <script>
 	import { Button, Modal, Textarea } from 'flowbite-svelte';
+	import { onMount } from 'svelte';
 	let selfIntroductionModal = false;
 	let categoriesModal = false;
 	let username = '';
-	if (typeof window !== 'undefined') {
+
+	onMount(async () => {
+		if (typeof window !== 'undefined') {
 		const url = window.location.href;
 		const pathSegments = new URL(url).pathname.split('/');
 		username = pathSegments[1];
-	}
+	};
+	getUserInfo();
+	});
+	
 
 	let textareapropsSelfIntroduction = {
 		id: 'message',
@@ -24,9 +30,9 @@
 		rows: 5,
 		placeholder: '카테고리 제목을 입력해주세요'
 	};
-
-	let selfIntroduction = {
-		selfIntroduction: ''
+	let selfIntroduction = '';
+	let modifyIntroduction = {
+		modifyIntroduction: ''
 	};
 	let category = {
 		category: ''
@@ -47,11 +53,12 @@
 
 			if (response.ok) {
 				const data = await response.json();
+				console.log(data)
 
 				if (data.resultCode === 'S-1') {
 					name = data.data.name;
 					categories = data.data.categories;
-					selfIntroduction.selfIntroduction = data.data.selfIntroduction;
+					selfIntroduction = data.data.selfIntroduction;
 				} else {
 					alert('본인 계정의 설정만 가능합니다.');
 				}
@@ -68,6 +75,7 @@
 	};
 
 	const setUserInfo = async () => {
+		console.log(selfIntroduction)
 		try {
 			const response = await fetch(`http://localhost:8080/api/v1/${username}`, {
 				method: 'PUT',
@@ -75,13 +83,13 @@
 					'Content-Type': 'application/json'
 				},
 				credentials: 'include',
-				body: JSON.stringify(selfIntroduction)
+				body: JSON.stringify(modifyIntroduction)
 			});
 
 			if (response.ok) {
 				const data = await response.json();
 
-				if (data.resultCode === 'S-1') {
+				if (data.resultCode === 'S-2') {
 					category.category = '';
 					alert('수정이 완료되었습니다');
 					getUserInfo();
@@ -145,14 +153,14 @@
 		<div class="ml-8">
 			<p>{name}의 페이지</p>
 			<br />
-			<p>{selfIntroduction.selfIntroduction}</p>
+			<p>{selfIntroduction}</p>
 			<Button class="p-0 text-[#8AAAE5] underline" on:click={() => (selfIntroductionModal = true)}
 				>수정</Button
 			>
 			<Modal title="자기소개 수정" bind:open={selfIntroductionModal} autoclose>
 				<Textarea
 					{...textareapropsSelfIntroduction}
-					bind:value={selfIntroduction.selfIntroduction}
+					bind:value={modifyIntroduction.modifyIntroduction}
 				/>
 				<svelte:fragment slot="footer">
 					<Button class="bg-[#8AAAE5]" on:click={() => setUserInfo()}>수정 완료</Button>

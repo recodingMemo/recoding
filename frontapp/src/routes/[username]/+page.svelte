@@ -1,4 +1,5 @@
 <script>
+	import { onMount } from 'svelte';
 	let username = '';
 	if (typeof window !== 'undefined') {
 		const url = window.location.href;
@@ -11,6 +12,15 @@
 	let name = '';
 	let categories = [];
 	let selfIntroduction = '';
+	onMount(async () => {
+		if (typeof window !== 'undefined') {
+		const url = window.location.href;
+		const pathSegments = new URL(url).pathname.split('/');
+		username = pathSegments[1];
+	};
+	getUserInfo();
+	getUserPost('total');
+	});
 
 	const getUserInfo = async () => {
 		try {
@@ -30,7 +40,7 @@
 					categories = data.data.categories;
 					selfIntroduction = data.data.selfIntroduction;
 				} else {
-					alert('본인 계정의 설정만 가능합니다.');
+					
 				}
 			} else {
 				console.error('서버 응답 오류:', response.statusText);
@@ -62,6 +72,7 @@
 				const data = await response.json();
 
 				if (data.resultCode === 'S-1') {
+					console.log(data)
 					userPosts = data.data.posts;
 				} else {
 					alert('아이디/카테고리가 잘못되었습니다. 확인해 주세요.');
@@ -101,9 +112,9 @@
 				<!-- <div class="userProfile_block"></div> -->
 				<p class="mt-12">카테고리 리스트</p>
 				<p class="userCategory_block"></p>
-				<button on:click={() => getUserPost('total')}>전체보기</button>
+				<button class="mb-2" on:click={() => getUserPost('total')}>전체보기</button><br/>
 				{#each categories as category}
-					<button on:click={() => getUserPost(category.name)}>{category.name} </button>
+					<button on:click={() => getUserPost(category.name)}>{category.name} </button><br/>
 				{/each}
 			</aside>
 			<div class="grid grid-cols-5">

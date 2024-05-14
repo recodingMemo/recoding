@@ -29,7 +29,7 @@ public class CategoryController {
     @Data
     public static class CategoryRequest {
         @NotNull
-        private String name;
+        private String category;
 
     }
 
@@ -41,7 +41,7 @@ public class CategoryController {
         Member loginMember = this.memberService.findbyId(userId).orElse(null);
         if (loginMember != null) {
             Category category = Category.builder()
-                    .name(categoryRequest.name)
+                    .name(categoryRequest.getCategory())
                     .member(loginMember)
                     .build();
             this.categoryService.save(category);

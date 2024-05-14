@@ -7,6 +7,7 @@ import recoding.example.recode.domain.category.repository.CategoryRepository;
 import recoding.example.recode.domain.member.entity.Member;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,5 +24,9 @@ public class CategoryService {
 
     public Category findByName(String categoryName) {
         return this.categoryRepository.findByName(categoryName).orElse(null);
+    }
+
+    public Optional<Category> findByMemberAndName(Member loginMember, String category) {
+        return this.categoryRepository.findByMemberAndName(loginMember,category);
     }
 }
