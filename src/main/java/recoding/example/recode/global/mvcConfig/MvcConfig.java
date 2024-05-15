@@ -41,7 +41,8 @@ public class MvcConfig implements WebMvcConfigurer {
                         "/api/v1/member/delete",
                         "/api/v1/member/modify",
                         "/api/v1/member/modify-password",
-                        "/api/v1/test/test"
+                        "/api/v1/test/test",
+                        "/api/v1/member/kakaologin"
                 );  // 이 경로들에는 적용하지 않습니다.
 
     }

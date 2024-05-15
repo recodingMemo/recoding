@@ -40,7 +40,7 @@
 					categories = data.data.categories;
 					selfIntroduction = data.data.selfIntroduction;
 				} else {
-					
+
 				}
 			} else {
 				console.error('서버 응답 오류:', response.statusText);
