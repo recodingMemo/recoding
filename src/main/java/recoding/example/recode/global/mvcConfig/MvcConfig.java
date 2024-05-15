@@ -27,14 +27,6 @@ public class MvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(new JwtInterceptor(secretKey))
 //                .addPathPatterns("/**")  // 이 인터셉터를 모든 경로에 적용합니다.
                 .excludePathPatterns(
-                        "/api/v1/company/code-search",
-                        "/api/v1/company/check-username",
-                        "/api/v1/company/check-businessNumber",
-                        "/api/v1/company/check-name",
-                        "/api/v1/company/join",
-                        "/api/v1/company/id-search",
-                        "/api/v1/company/pw-search",
-                        "/api/v1/company/pw-modify",
                         "/api/v1/email/send",
                         "/api/v1/member/login",
                         "/api/v1/member/user-manages",
@@ -42,7 +34,8 @@ public class MvcConfig implements WebMvcConfigurer {
                         "/api/v1/member/modify",
                         "/api/v1/member/modify-password",
                         "/api/v1/test/test",
-                        "/api/v1/member/kakaologin"
+                        "/api/v1/member/kakaologin",
+                        "/api/v1/post"
                 );  // 이 경로들에는 적용하지 않습니다.
 
     }

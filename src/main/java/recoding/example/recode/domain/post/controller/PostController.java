@@ -95,6 +95,9 @@ public class PostController {
     @PostMapping(value = "/post")
     public RsData<?> post(@RequestBody PostRequest postRequest, HttpServletRequest request) {
         String token = extractAccessToken(request);
+        if (token == null) {
+            return RsData.of("E-4", "토큰이 없습니다.", null);
+        }
         Long userId = ((Integer) jwtProvider.getClaims(token).get("id")).longValue();
         Member loginMember = this.memberService.findbyId(userId).orElse(null);
         if (loginMember != null) {

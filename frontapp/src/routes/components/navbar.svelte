@@ -6,6 +6,30 @@
         Dropdown,
         DropdownItem,
     } from 'flowbite-svelte';
+
+    let isLoggedIn = false;
+
+    //토큰 얻기
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) {
+            const token = parts.pop().split(';').shift();
+            isLoggedIn = true; // 토큰이 있으면 로그인 상태로 설정
+            return token;
+        }
+        isLoggedIn = false; // 토큰이 없으면 로그아웃 상태로 설정
+    }
+
+    const token = getCookie('kakaoToken');
+    console.log(token);
+
+    const logout = async () => {
+        document.cookie = 'kakaoToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+
+        console.log(document.cookie);
+        isLoggedIn = false;
+    }
 </script>
 
 <Navbar class="px-2 sm:px-4 py-2.5 fixed w-full z-20 top-0 start-0 border-b">
@@ -25,7 +49,13 @@
             <span class="block truncate text-sm font-medium">name@flowbite.com</span>
         </DropdownHeader>-->
         <DropdownItem>
-            <a href="/login">↗️ 로그인 & 가입</a>
+
+                {#if isLoggedIn}
+                    <a on:click={logout} id="login-link" href="/login">↗️ 로그아웃 </a>
+                {:else}
+                    <a id="login-link" href="/login">↗️ 로그인 & 가입 </a>
+                {/if}
+
         </DropdownItem>
     </Dropdown>
 </Navbar>

@@ -61,6 +61,10 @@
                 // 백엔드 서버에서 받은 res 변수에 담긴 ok값이 true 라면
                 if (res.ok) {
                     const data = await res.json();
+                    console.log(data);
+
+                    document.cookie = `kakaoToken=${data.data.accessToken}; path=/;`;
+                    console.log(document.cookie);
 
                     const nickname = userInfo.properties.nickname;
                     window.location.href = `/${nickname}`;

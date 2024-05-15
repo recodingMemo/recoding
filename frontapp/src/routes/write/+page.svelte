@@ -12,7 +12,6 @@
 	let categories = [];
 	onMount(async () => {
 		const Editor = (await import('@toast-ui/editor')).default;
-
 		markdownEditor = new Editor({
 			el: markdownEditorEl,
 			height: '80vh',
@@ -69,11 +68,26 @@
 
 	const Post = async () => {
 		formData.content = markdownEditor.getMarkdown();
+
+		//토큰 얻기
+		function getCookie(name) {
+			const value = `; ${document.cookie}`;
+			const parts = value.split(`; ${name}=`);
+			if (parts.length === 2) return parts.pop().split(';').shift();
+		}
+		const token = getCookie('kakaoToken');
+		console.log(token);
+
+		if (!token) {
+			console.error('토큰 없음');
+			return;
+		}
 		try {
 			const response = await fetch(`http://localhost:8080/api/v1/post`, {
 				method: 'POST',
 				headers: {
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
 				},
 				credentials: 'include',
 				body: JSON.stringify(formData)
@@ -89,21 +103,24 @@
 					alert('본인 계정의 설정만 가능합니다.');
 				}
 			} else {
+				// 서버에서 오류 응답 코드를 반환한 경우
 				console.error('서버 응답 오류:', response.statusText);
-				if (!response.ok && response.status != 401) {
-					alert('다시 시도 해주세요.');
+				if (response.status === 401) {
+					alert('인증되지 않았습니다. 로그인 후 다시 시도하세요.');
+				} else {
+					alert('서버 응답 오류가 발생했습니다. 다시 시도해주세요.');
 				}
 			}
 		} catch (error) {
 			console.error('오류 발생:', error);
-			alert('다시 시도 해주세요.');
+			alert('서버에 요청하는 도중 오류가 발생했습니다. 다시 시도해주세요.');
 		}
 	};
 
 </script>
 
 <form>
-	<div class="flex items-center">
+	<div class="flex items-center mt-16">
 		<form class="mr-4 max-w-sm">
 			<label for="countries" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
 			></label>
@@ -133,8 +150,7 @@
 	<div bind:this={markdownEditorEl} />
 </form>
 
-<Button class="bg-[#8AAAE5]" on:click={Post}>게시</Button>
-
-<Button class="bg-[#8AAAE5]" on:click={check}>확인</Button>
-<Button class="bg-[#8AAAE5]" on:click={check2}>확인2</Button>
+<Button style="background-color:#8AAAE5;" on:click={Post}>게시</Button>
+<Button style="background-color:#8AAAE5;" on:click={check}>확인</Button>
+<Button style="background-color:#8AAAE5;" on:click={check2}>확인2</Button>
 
